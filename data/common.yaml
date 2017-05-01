@@ -1,0 +1,38 @@
+rsyslog::rsyslog_package_name: 'rsyslog'
+rsyslog::package_ensure: 'present'
+rsyslog::relp_package_name: 'rsyslog-relp'
+rsyslog::gnutls_package_name: 'rsyslog-gnutls'
+rsyslog::mysql_package_name: 'rsyslog-mysql'
+rsyslog::pgsql_package_name: 'rsyslog-pgsql'
+rsyslog::rsyslog_d: '/etc/rsyslog.d'
+rsyslog::purge_rsyslog_d: true
+rsyslog::rsyslog_conf: '/etc/rsyslog.conf'
+rsyslog::service_name: 'rsyslog'
+rsyslog::service_hasstatus: true
+rsyslog::service_hasrestart: true
+rsyslog::rsyslog_default: '/etc/default/rsyslog'
+rsyslog::spool_dir: '/var/spool/rsyslog'
+rsyslog::preserve_fqdn: false
+rsyslog::modules:
+  - '$ModLoad imuxsock'
+  - '$ModLoad imklog'
+  - '$ModLoad ommysql'
+rsyslog::max_message_size: '2k'
+rsyslog::system_log_rate_limit_interval: '1'
+rsyslog::log_user: 'root'
+rsyslog::log_group: 'root'
+rsyslog::perm_file: '0600'
+rsyslog::perm_dir: '0750'
+rsyslog::run_user: 'root'
+rsyslog::run_group: 'root'
+rsyslog::spool_dir: '/var/lib/rsyslog'
+rsyslog::client::client_conf: '/etc/rsyslog.d/00_client.conf'
+rsyslog::client::remote_servers: false
+rsyslog::client::spool_size: '1g'
+rsyslog::client::spool_timeoutenqueue: false 
+rsyslog::client::log_templates: false
+rsyslog::client::log_filters: false
+rsyslog::server::server_conf: '/etc/rsyslog.d/00_server.conf'
+rsyslog::authpriv_file: '-/var/log/secure'
+rsyslog::mail_file: '-/var/log/mail.log'
+rsyslog::cron_file: '-/var/log/cron.log'

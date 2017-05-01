@@ -1,0 +1,49 @@
+# rsyslog.conf: Managed by puppet.
+<% if scope.lookupvar('rsyslog::preserve_fqdn') -%>
+$PreserveFQDN on
+<% end -%>
+
+<% if scope.lookupvar('rsyslog::local_host_name') and scope.lookupvar('rsyslog::local_host_name') != :undef -%>
+$LocalHostName <%= scope.lookupvar('rsyslog::local_host_name') %>
+<% end -%>
+#### MODULES ####
+
+<% scope.lookupvar('rsyslog::modules').each do |module_row| -%>
+<%= module_row %>
+<% end -%>
+
+### GLOBAL DIRECTIVES ####
+<% if scope.lookupvar('rsyslog::max_message_size') -%>
+# Set max message size for sending and receiving
+$MaxMessageSize <%= scope.lookupvar('rsyslog::max_message_size') %>
+<% end -%>
+
+<% if scope.lookupvar('rsyslog::system_log_rate_limit_interval') -%>
+# Set rate limit for messages received.
+$SystemLogRateLimitInterval <%= scope.lookupvar('rsyslog::system_log_rate_limit_interval') %>
+<% end -%>
+
+# Set the default permissions for all log files.
+$FileOwner <%= scope.lookupvar('rsyslog::log_user') %>
+$FileGroup <%= scope.lookupvar('rsyslog::log_group') %>
+$FileCreateMode <%= scope.lookupvar('rsyslog::perm_file') %>
+$DirOwner <%= scope.lookupvar('rsyslog::log_user') %>
+$DirGroup <%= scope.lookupvar('rsyslog::log_group') %>
+$DirCreateMode <%= scope.lookupvar('rsyslog::perm_dir') %>
+$PrivDropToUser <%= scope.lookupvar('rsyslog::run_user') %>
+$PrivDropToGroup <%= scope.lookupvar('rsyslog::run_group') %>
+$WorkDirectory <%= scope.lookupvar('rsyslog::spool_dir') %>
+
+# Include all config files in <%= scope.lookupvar('rsyslog::rsyslog_d') %>
+$IncludeConfig <%= scope.lookupvar('rsyslog::rsyslog_d') -%>/*.conf
+
+# Emergencies are sent to everybody logged in.
+*.emerg	*
+
+# First some standard log files.
+*.info;mail.none;authpriv.none;cron.none    <%= scope.lookupvar('rsyslog::syslog') %>
+#authpriv.*                                  <%= scope.lookupvar('rsyslog::authpriv_file') %>
+mail.*                                      <%= scope.lookupvar('rsyslog::mail_file') %>
+cron.*                                      <%= scope.lookupvar('rsyslog::cron_file') %>
+uucp,news,crit                              -/var/log/spooler
+local7.*                                    /var/log/boot.log

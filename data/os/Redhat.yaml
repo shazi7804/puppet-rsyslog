@@ -1,0 +1,1 @@
+rsyslog::syslog: '-/var/log/message'

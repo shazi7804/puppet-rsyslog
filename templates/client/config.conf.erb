@@ -1,0 +1,31 @@
+# An "In-Memory Queue" is created for remote logging.
+$WorkDirectory <%= scope.lookupvar('rsyslog::spool_dir') -%>    # where to place spool files
+$ActionQueueFileName queue      # unique name prefix for spool files
+$ActionQueueMaxDiskSpace <%= scope.lookupvar('rsyslog::client::spool_size') -%>     # spool space limit (use as much as possible)
+$ActionQueueSaveOnShutdown on   # save messages to disk on shutdown
+<% if scope.lookupvar('rsyslog::client::spool_timeoutenqueue') -%>
+$ActionQueueTimeoutEnqueue <%= scope.lookupvar('rsyslog::client::spool_timeoutenqueue') -%>   # time to wait before discarding on full spool
+<% end -%>
+$ActionQueueType LinkedList     # run asynchronously
+$ActionResumeRetryCount -1      # infinety retries if host is down
+
+<% if scope.lookupvar('rsyslog::client::log_templates') and ! scope.lookupvar('rsyslog::client::log_templates').empty?-%>
+# Define custom logging templates
+<% scope.lookupvar('rsyslog::client::log_templates').flatten.compact.each do |log_template| -%>
+$template <%= log_template['name'] %>,"<%= log_template['template'] %>",SQL
+<% end -%>
+<% end -%>
+
+<% if scope.lookupvar('rsyslog::client::property_log_filters') -%>
+# Define custom Property-Based filters log conditions
+<% scope.lookupvar('rsyslog::client::property_log_filters').each do |property_log_filter| -%>
+:<%= property_log_filter['name'] %>, <%= property_log_filter['compare'] %>, <%= property_log_filter['value'] %> <%= property_log_filter['action'] %>
+<% end -%>
+<% end -%>
+
+<% if scope.lookupvar('rsyslog::client::log_filters') -%>
+# Define custom if/then filters log conditions
+<% scope.lookupvar('rsyslog::client::log_filters').each do |log_filter| -%>
+if <%= log_filter['expression'] %> then <%= log_filter['action'] %>
+<% end -%>
+<% end -%>
